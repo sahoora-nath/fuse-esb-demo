@@ -1,0 +1,142 @@
+:sectanchors:
+:toc: macro
+:toclevels: 2
+:toc-title: Table of Content
+:numbered:
+
+= Jboss Fuse CXF-REST-Service demo
+
+toc::[]
+
+== Overview
+
+This demo will show you how to create REST-Service using CXF and deplying intoFUSE.
+REST stands for Representational State Transfer. It is a way of developing web services based on state-less, cacheable, client-server protocol, which is HTTP in most cases.
+REST web services use HTTP requests to POST, GET and DELETE data from network.
+
+== Prerequisites
+
+- JDK 1.8
+- Apache Maven 3.2.3
+- Jboss Fuse 6.3.0
+
+== Building the Demo
+Use Apache Maven to build the demo. Open a new command prompt, change directory to `CXF-REST-Service/`, and enter the following command:
+
+`mvn clean install`
+
+== REST Development using CXF
+
+=== Create a Maven quick-start project
+----
+mvn archetype:generate -DgroupId=com.sahoora.rest.service.demo -DartifactId=CXF-REST-Service -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+----
+
+=== Add dependencies
+----
+<dependency>
+	<groupId>org.apache.servicemix.specs</groupId>
+	<artifactId>org.apache.servicemix.specs.jsr311-api-1.1.1</artifactId>
+	<version>1.9.0</version>
+	<scope>provided</scope>
+</dependency>
+
+<dependency>
+	<groupId>org.apache.servicemix</groupId>
+	<artifactId>servicemix-http</artifactId>
+	<version>2013.01</version>
+</dependency>
+----
+
+=== Add Build Instruction
+To avoid issue https://issues.apache.org/jira/browse/CXF-5654 which is caused by a dependency on an old version of javax.ws.rs
+----
+javax.ws.rs;version="[1.1,2)",
+javax.ws.rs.core;version="[1.1,2)",
+----
+CXF 3.x needs to import explicitly java rs api 2.0
+
+----
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<plugins>			
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>3.2.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-SymbolicName>REST-SERVICE</Bundle-SymbolicName>
+						<Import-Package>
+							META-INF.cxf,
+							org.apache.cxf.bus.spring,
+							javax.ws.rs;version="[2.0,3)",
+							javax.ws.rs.core;version="[2.0,3)",
+							*
+						</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>			
+		</plugins>
+	</build>
+----
+
+=== Create Service
+----
+package com.sahoora.rest.service.demo;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+@Path("/StudentService_1")
+public class StudentService {
+
+	@GET
+	@Path("/get_data")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getStudent() {
+		String reponse = "This is standard response from REST";
+		return reponse;
+	}
+}
+----
+
+=== Create and configure in blueprint.xml
+Create blueprint.xml under/src/main/resources/OSGI-INF/blueprint blueprint.xml
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+   xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+   xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 
+   http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+   http://cxf.apache.org/blueprint/jaxrs 
+   http://cxf.apache.org/schemas/blueprint/jaxrs.xsd">
+	
+   <jaxrs:server id="service" address="/students">
+      <jaxrs:serviceBeans>
+         <ref component-id="studentService" />
+      </jaxrs:serviceBeans>
+   </jaxrs:server>
+	
+   <bean id="studentService" class="com.sahoora.rest.service.demo.StudentService" />
+</blueprint>
+----
+
+=== Install Rest service in Fuse
+----
+install -s mvn:com.sahoora.rest.service.demo/rest-service/1.0-SNAPSHOT
+----
+
+=== Check If Bundle is registered as WEB-SERVICE
+http://localhost:8181/cxf
+
+image::/images/check-webservice.png[]
+
+=== Test webservice
+Hit webservice http://localhost:8181/cxf/students/StudentService_1/get_data
+
+image::/images/test-webservice.png[]
