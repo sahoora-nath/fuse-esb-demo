@@ -140,11 +140,11 @@ http://localhost:8181/cxf
 
 CXF REST-SERVICE
 
-image::/images/check-webservice.png[]
+image::/images/CXF-REST-Service/check-webservice.png[]
 
 === Test webservice
 Hit webservice http://localhost:8181/cxf/students/StudentService_1/get_data
 
 CXF-REST-Service response
 
-image::/images/test-webservice.png[]
+image::/images/CXF-REST-Service/test-webservice.png[]
