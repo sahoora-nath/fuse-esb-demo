@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		  xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+          xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+          elementFormDefault="qualified"
+          attributeFormDefault="unqualified"
+          jaxb:extensionBindingPrefixes="xjc"
+          jaxb:version="2.1">
+	<xs:annotation>
+		<xs:appinfo>
+			<jaxb:globalBindings>
+				<xjc:javaType name="java.util.Date" xmlType="xs:date" adapter="com.sahoora.fuse.demo.util.DateAdapter"/>
+        		<xjc:javaType name="java.util.Date" xmlType="xs:dateTime" adapter="com.sahoora.fuse.demo.util.DateTimeAdapter"/>
+			</jaxb:globalBindings>
+		</xs:appinfo>
+	</xs:annotation>          
+</xs:schema>

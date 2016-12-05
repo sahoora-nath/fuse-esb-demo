@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+	xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0">
+    
+    <reference id="studentResultDao" interface="com.sahoora.fuse.demo.dao.StudentResultDao"/>
+    
+    <service id="studentResultService" 
+    	interface="com.sahoora.fuse.demo.service.StudentResultService"
+    	ref="studentResultServiceImpl"/>
+    	
+    <bean id="studentResultServiceImpl" class="com.sahoora.fuse.demo.service.impl.StudentResultServiceImpl">
+    	<property name="studentResultDao" ref="studentResultDao"/>
+    </bean>
+    
+</blueprint>

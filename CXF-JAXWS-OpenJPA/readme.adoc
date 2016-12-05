@@ -1,0 +1,122 @@
+:sectanchors:
+:toc: macro
+:toclevels: 2
+:toc-title: Table of Content
+:numbered:
+
+= Jboss Fuse CXF-JPA-XA demo
+
+toc::[]
+
+== Overview
+
+This demo will show you how to leverage the JTA transaction manager provided by Fuse ESB when working with Open-JPA with JAXWS endpoints. We will setup a cxf webservice that gets the messages and inserts information into a database using JTA and XA transactions and deploy that onto JBoss Fuse 6.3.0.
+We are using SOAP-UI to send test messages to CXF webservice.
+
+== Prerequisites
+
+- JDK 1.8
+- Apache Maven 3.2.3
+- MySQL community edition server
+- Jboss Fuse 6.3.0
+
+== Building the Demo
+Use Apache Maven to build the demo. Open a new command prompt, change directory to `fuse-cxf-jpa-xa-demo/`, and enter the following command:
+
+`mvn clean install`
+
+==== Optional maven settings
+
+If your local Maven repository is in a non-standard location, you might need to edit the JBoss Fuse configuration to specify your custom location. Edit the InstallDir/etc/org.ops4j.pax.url.mvn.cfg file and set the org.ops4j.pax.url.mvn.localRepository property to the location of your local Maven repository:
+----
+#
+# Path to the local maven repository which is used to avoid downloading
+# artifacts when they already exist locally.
+# The value of this property will be extracted from the settings.xml file
+# above, or defaulted to:
+#     System.getProperty( "user.home" ) + "/.m2/repository"
+#
+#org.ops4j.pax.url.mvn.localRepository=
+org.ops4j.pax.url.mvn.localRepository=file:C:/Maven/repository
+----
+
+=== Setting up the database server
+
+For this example, we will be using mysql community edition server. Before installing the demo, we need to setup the server and create the database tables.
+
+. To create database tables.
+In the db shell, run these following commands:
+[source,sql]
+----
+CREATE TABLE STUDENTS_RESULT (
+      ID INT(12) NOT NULL AUTO_INCREMENT,
+      LAST_UPDATED_DATE DATETIME,
+	  CREATED_DATE DATETIME,
+	  UPDATED_BY VARCHAR(30) NOT NULL,
+      STUDENT_NAME VARCHAR(30) NOT NULL,
+      DOB DATE NOT NULL,
+      PERCENTAGE  DOUBLE NOT NULL,
+      JPA_VERSION_NUMBER INT(22),
+	  PRIMARY KEY (ID)
+    );
+----
+To be sure the tables got created successfully, run one more command:
+[source,sql]
+----
+select * from STUDENTS_RESULT;
+----
+	
+== Configuring MySQL XA datasource
+
+You need to put the datasource.xml file into `/jboss-fuse-6.3.0.redhat-187/deploy/` and restart fuse. Change the properties like username, password, databaseName and URL as per your settings.
+Once datasource is deployed successfully, you can see the bundle using `ls <bundleId>`
+
+we can see that this bundle is publishing 3 services:
+
+- `javax.sql.XADataSource`
+- Aries JTA has added a corresponding `javax.sql.DataSource` and added the `aries.xa.aware = true` property to it to indicate an XA-aware data source.
+- Blueprint extender mechanism also published the Blueprint container
+
+----
+Bundle 444 provides:
+--------------------
+aries.xa.exceptionSorter = known
+aries.xa.name = mysqlDS
+aries.xa.pooling = true
+aries.xa.poolMaxSize = 5
+aries.xa.poolMinSize = 0
+datasource.name = MySQL
+objectClass = [javax.sql.XADataSource]
+osgi.jndi.service.name = jdbc/mysqldb
+osgi.service.blueprint.compname = mysql-ds
+service.id = 697
+----
+
+----
+aries.managed = true
+aries.xa.aware = true
+aries.xa.exceptionSorter = known
+aries.xa.name = mysqlDS
+aries.xa.pooling = true
+aries.xa.poolMaxSize = 5
+aries.xa.poolMinSize = 0
+datasource.name = MySQL
+objectClass = [javax.sql.DataSource]
+osgi.jndi.service.name = jdbc/mysqldb
+osgi.service.blueprint.compname = mysql-ds
+service.id = 698
+service.ranking = 1000
+----
+
+----
+objectClass = [org.osgi.service.blueprint.container.BlueprintContainer]
+osgi.blueprint.container.symbolicname = datasource.xml
+osgi.blueprint.container.version = 0.0.0
+service.id = 699
+---- 
+
+== Configuring JAX-WS Endpoints
+Follow this following link to generate WSDL contract.
+https://access.redhat.com/documentation/en-US/Red_Hat_JBoss_Fuse/6.0/html/Web_Services_and_Routing_with_Camel_CXF/files/ImplWs-WsdlFirst-WsflContract.html
+
+

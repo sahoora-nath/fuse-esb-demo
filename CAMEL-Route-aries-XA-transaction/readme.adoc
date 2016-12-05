@@ -1,0 +1,199 @@
+:sectanchors:
+:toc: macro
+:toclevels: 2
+:toc-title: Table of Content
+:numbered:
+
+= Fuse ESB Aries transaction with Apache Camel
+
+toc::[]
+
+== Goals
+
+* Leverage Fuse ESB's JTA and JPA support in your routes.
+* Configure a JMS component to support XA.
+* Define a transactional route
+* Configure a ResourceManager that can recover XA transactions after a crash.
+* Configure a JTA persistence unit.
+* Setup a XA-Aware datasource
+* Using the new Rest DSL of apache camel
+* Document the RESTful endpoints using Swagger API.
+
+== Overview
+
+This demo will show you how to leverage the JTA transaction manager provided by Fuse ESB when working with JMS or JTA Camel endpoints. We will setup a camel-route that reads messages from a queue and inserts information into a database using JTA and XA transactions and deploy that onto JBoss Fuse 6.3.0.
+
+== Prerequisites
+
+- JDK 1.8
+- Apache Maven 3.2.3
+- MySQL community edition server
+- Jboss Fuse 6.3.0
+
+== Project Setup
+=== Compile Project
+
+. Open a Windows or Unix terminal.
+. Using the `git` utility, clone this project to your local workstation.
+
+----
+cd fuse-esb-aries-transaction
+mvn clean install
+----
+
+=== Setting up the database server
+
+For this example, we will be using mysql community edition server. Before installing the demo, we need to setup the server and create the database tables.
+
+. To create database tables.
+In the db shell, run these following commands:
+[source,sql]
+----
+CREATE TABLE STUDENTS_RESULT (
+      ID INT(12) NOT NULL AUTO_INCREMENT,
+      LAST_UPDATED_DATE DATETIME,
+	  CREATED_DATE DATETIME,
+	  UPDATED_BY VARCHAR(30) NOT NULL,
+      STUDENT_NAME VARCHAR(30) NOT NULL,
+      DOB DATE NOT NULL,
+      PERCENTAGE  DOUBLE NOT NULL,
+      JPA_VERSION_NUMBER INT(22),
+	  PRIMARY KEY (ID)
+    );
+
+----
+To be sure the tables got created successfully, run one more command:
+[source,sql]
+----
+select * from STUDENTS_RESULT;
+----
+
+== Usecase
+Exposing a MQ service which updates the student result data into MySQL Database.
+
+== Configuring Features
+
+You can add all prerequisite features and bundle one by one before going to next step.
+----
+features:install jpa
+features:install jndi
+features:install camel-blueprint
+features:install camel-jpa
+features:install camel-jms
+features:install connector
+	
+install -s wrap:mvn:mysql/mysql-connector-java/5.1.39</bundle>
+---- 
+
+The other option is to include all the prerequisite features and bundle of our project as a custom feature.
+
+Follow the below link how to define a feature for the application:
+https://access.redhat.com/documentation/en-US/Red_Hat_JBoss_Fuse/6.0/html/Getting_Started/files/Develop-Feature.html
+
+We have configured a custom feature for this application. To deploy the `CustomRepository` feature into the container, perform the following steps:
+* Add the features repository URL to the container, by entering the following console command:
+----
+features:addurl mvn:com.sahoo.camel.aries.example.transactions/features/1.0-SNAPSHOT/xml/features
+----
+
+* To install the `transactions-openjpa` feature, enter the following console command:
+----
+features:install transactions-openjpa
+----
+You can check whether the container knows about the new features by entering the console command `features:list`. If necessary, you can use the `features:refreshurl` console command, which forces the container to re-read its features repositories.
+
+----
++
+. NOTE: If you are using any custom maven repository, make sure #org.ops4j.pax.url.mvn.localRepository = ${karaf.data}/repository is commented out.
+So that fuse consider the settings defined here -> /jboss-fuse-6.3.0.redhat-187/etc/maven-settings.xml
++
+----
+
+== Configuring DataSource
+
+We are using blueprint to define the datasource bean and publish it to OSGI Registry.
+Put the datasource xml (datasource/mysql-datasource.xml) file under /jboss-fuse-6.3.0.redhat-187/deploy/ and restart fuse.
+
+----
++
+. NOTE: Issue https://issues.jboss.org/browse/ENTESB-633 is resolved in Jboss Fuse 6.3.0, hence no workaround required.
+JDBC DataSource gets auto-enlisted into Aries. Wrapper class implementation to recover ResourceManager for JDBC DataSource is no more required.
++
+----
+
+=== OSGI Registry
+
+After successful restart, you can see an active bundle as mysql-datasource.xml is created.
+----
+[ 444] [Active     ] [Created     ] [       ] [   80] mysql-datasource.xml (0.0.0)
+[ 445] [Active     ] [            ] [       ] [   80] Oracle Corporation's JDBC Driver for MySQL (5.1.39)
+----
+
+We can see the datasource bundle is publishing 3 services.
+
+* First javax.sql.XADataSource
+* Aries JTA has added `javax.sql.DataSource` and added the `aries.xa.aware = true` property to it to indicate an XA-aware data source.
+* Blueprint container.
+
+Check datasource/readme for more details.
+
+== Configuring Model
+
+In this demo we are using `openjpa` as our JPA persistence provider. The OpenJPA project recommends byte-code weaving to enhance the entity classes.  For deployment in Fuse ESB Enterprise, this needs to be done at build-time, using the maven-antrun-plugin definition. Check model/pom.xml for more details.
+
+The model should be packing as bundle `<packaging>bundle</packaging>` and we are using `maven-bundle-plugin` to bunlde the model jar.
+
+=== Deploying Model DBO
+Once build(mvn clean install) is successful, install the bunlde using the following command.
+----
+install -s wrap:mvn:com.sahoo.camel.aries.example.transactions/model/1.0-SNAPSHOT
+----
+You can see in fuse console the bundle is active
+----
+[ 337] [Active     ] [            ] [       ] [   80] Fuse ESB :: Transactions :: Model (1.0.0.SNAPSHOT)
+
+JBossFuse:karaf@root> ls 337
+
+Fuse ESB :: Transactions :: Model (337) provides:
+-------------------------------------------------
+objectClass = [javax.persistence.EntityManagerFactory]
+org.apache.aries.jpa.container.managed = true
+org.apache.aries.jpa.default.unit.name = false
+osgi.unit.name = studentResultUnit
+osgi.unit.provider = org.apache.openjpa.persistence.PersistenceProviderImpl
+osgi.unit.version = 1.0.0.SNAPSHOT
+service.id = 664
+----
+
+== Configuring Integration(Camel Route)
+
+Aries JTA provides a transaction manager that implements org.springframework.transaction.PlatformTransactionManager. We can use <osgi:reference/> to lookup this service from the OSGi Service Registry and start using it in this Spring file
+In this example Camel route is amq:// components with a configuration that points to the JcaPooledConnectionFactory and the global Spring PlatformTransactiongManager.
+
+Install the integration bundle in fuse using the following command.
+----
+install -s wrap:mvn:com.sahoo.camel.aries.example.transactions/integration/1.0-SNAPSHOT
+----
+You can see in fuse console the bundle is started
+----
+[ 341] [Active     ] [            ] [Started] [   80] Fuse ESB :: Transactions :: Integration (1.0.0.SNAPSHOT)
+JBossFuse:karaf@root> ls 341
+
+Fuse ESB :: Transactions :: Integration (341) provides:
+-------------------------------------------------------
+camel.context.managementname = transactions-integration-sahoora-Esb-Aries-Context
+camel.context.name = sahoora-Esb-Aries-Context
+camel.context.symbolicname = transactions-integration
+camel.context.version = 1.0.0.SNAPSHOT
+objectClass = [org.apache.camel.CamelContext]
+service.id = 670
+----
+----
+Bundle-SymbolicName = transactions-integration
+Bundle-Version = 1.0.0.SNAPSHOT
+objectClass = [org.springframework.osgi.context.DelegatedExecutionOsgiBundleApplicationContext, org.springframework.osgi.context.ConfigurableOsgiBundleApplicationContext, org.springframework.context.ConfigurableApplicationContext, org.springframework.context.ApplicationContext, org.springframework.context.Lifecycle, java.io.Closeable, org.springframework.beans.factory.ListableBeanFactory, org.springframework.beans.factory.HierarchicalBeanFactory, org.springframework.context.MessageSource, org.springframework.context.ApplicationEventPublisher, org.springframework.core.io.support.ResourcePatternResolver, org.springframework.beans.factory.BeanFactory, org.springframework.core.io.ResourceLoader, java.lang.AutoCloseable, org.springframework.beans.factory.DisposableBean]
+org.springframework.context.service.name = transactions-integration
+service.id = 671
+----
+
+== Running the demo

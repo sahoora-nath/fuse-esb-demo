@@ -1,0 +1,28 @@
+<wsdl:definitions name="Faults"
+	targetNamespace="http://demo.fuse.sahoora.com/Faults"
+	xmlns:tns="http://demo.fuse.sahoora.com/Faults"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+    <wsdl:types>
+    	<xsd:schema targetNamespace="http://demo.fuse.sahoora.com/Faults"
+    				elementFormDefault="qualified">
+    		<xsd:complexType name="WSException">
+    			<xsd:sequence>
+    				<xsd:element name="errorDescription" type="xsd:string"/>
+	    			<xsd:element name="errorMessage" type="xsd:string"/>
+    			</xsd:sequence>
+    		</xsd:complexType>
+    	</xsd:schema>
+    </wsdl:types>
+    
+    <wsdl:message name="StudentServiceExcpetion">
+    	<wsdl:part name="exceptionDetails" type="tns:WSException"/>
+    </wsdl:message>
+    
+    <wsdl:message name="NoResultExcpetion">
+    	<wsdl:part name="exceptionDetails" type="tns:WSException"/>
+    </wsdl:message>
+    
+</wsdl:definitions>

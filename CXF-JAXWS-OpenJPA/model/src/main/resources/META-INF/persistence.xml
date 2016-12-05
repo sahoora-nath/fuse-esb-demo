@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+    <persistence-unit name="studentResultUnit" transaction-type="JTA">
+    <description>Persistence unit for Student Result example</description>
+
+    <!--
+      For this demo, we are using OpenJPA as our JPA implementation.
+    -->
+    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+
+    <!--
+      The data sources have been defined and published into the OSGi Service Registry by the 'datasource' module.
+      You can also use JNDI references to refer to services in the OSGi Service Registry
+     -->
+    <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/mysqldb)</jta-data-source>
+    
+	<class>com.sahoora.fuse.demo.domain.base.StudentsBase</class>
+    <class>com.sahoora.fuse.demo.domain.StudentsResultDBO</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+    
+    <properties>
+      	
+    </properties>
+
+  </persistence-unit>
+
+</persistence>

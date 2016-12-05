@@ -1,0 +1,34 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
+
+  <!--
+    This defines the actual data source bean. It will instantiate a new 
+    ClientXADataSource instance and will use the corresponding settings to set 
+    the database and server name.  In our case, we will be running Apache Derby 
+    on the same machine so the server name is `localhost`. A database called 
+    `transactions` has been created up-front as well (see README.md).
+  -->
+  <bean id="mysql-ds" class="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource">
+    <property name="databaseName" value="appdev"/>
+    <property name="url" value="jdbc:mysql://localhost/appdev?relaxAutoCommit=true" />
+    <property name="user" value="root"/>
+    <property name="password" value="password"/>
+  </bean> 
+  
+
+  <service interface="javax.sql.XADataSource" ref="mysql-ds">
+    <service-properties>
+      <entry key="osgi.jndi.service.name" value="jdbc/mysqldb"/>
+      <entry key="datasource.name" value="MySQL"/>
+
+      <!-- additional supported properties 
+           https://github.com/apache/aries/blob/trunk/transaction/transaction-jdbc/src/main/java/org/apache/aries/transaction/jdbc/internal/ManagedDataSourceFactory.java#L94
+      -->
+      <entry key="aries.xa.pooling" value="true" />
+      <entry key="aries.xa.poolMinSize" value="0" />
+      <entry key="aries.xa.poolMaxSize" value="5" />
+      <entry key="aries.xa.name" value="mysqlDS" />      
+      <entry key="aries.xa.exceptionSorter" value="known" />
+    </service-properties>
+  </service>
+</blueprint>

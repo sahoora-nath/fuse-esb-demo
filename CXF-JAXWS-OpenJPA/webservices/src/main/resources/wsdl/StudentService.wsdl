@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<wsdl:definitions name="StudentService"
+	targetNamespace="http://demo.fuse.sahoora.com/ws/StudentService/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:tns="http://demo.fuse.sahoora.com/ws/StudentService/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:faults="http://demo.fuse.sahoora.com/Faults">
+    
+    <wsdl:import location="faults.wsdl" namespace="http://demo.fuse.sahoora.com/Faults"/>
+    
+    <wsdl:types>	
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://demo.fuse.sahoora.com/ws/StudentService/"
+			xmlns:st="http://demo.fuse.sahoora.com/StudentService">
+
+            <xsd:import namespace="http://demo.fuse.sahoora.com/StudentService"
+				schemaLocation="../xsd/Student.xsd" />
+			
+            <xsd:element name="lookupStudentRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="studentId" type="xsd:int"></xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="lookupStudentResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="student" type="st:Student" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="updateStudentRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="student" type="st:Student"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="updateStudentResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                    	<xsd:element name="student" type="st:Student"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="studentStatusRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="studentId" type="xsd:int"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="studentStatusResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="status" type="st:StudentStatusType"/>
+                        <xsd:element name="statusMessage" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>            
+        </xsd:schema>		
+    </wsdl:types>
+    <wsdl:message name="lookupStudentRequest">
+        <wsdl:part name="request" element="tns:lookupStudentRequest"/>
+    </wsdl:message>
+    <wsdl:message name="lookupStudentResponse">
+        <wsdl:part name="response" element="tns:lookupStudentResponse"/>
+    </wsdl:message>
+    <wsdl:message name="updateStudentRequest">
+        <wsdl:part name="request" element="tns:updateStudentRequest"/>
+    </wsdl:message>
+    <wsdl:message name="updateStudentResponse">
+        <wsdl:part name="response" element="tns:updateStudentResponse"/>
+    </wsdl:message>
+    <wsdl:message name="studentStatusRequest">
+        <wsdl:part name="request" element="tns:studentStatusRequest"/>
+    </wsdl:message>
+    <wsdl:message name="studentStatusResponse">
+        <wsdl:part name="response" element="tns:studentStatusResponse"/>
+    </wsdl:message>    
+    
+    <wsdl:portType name="StudentServicePort">
+    	<wsdl:documentation>This is a simple student result service.</wsdl:documentation>
+        <wsdl:operation name="lookupStudent">
+        	<wsdl:documentation>This operation simply checks student with valid id and gives back the details.</wsdl:documentation>
+            <wsdl:input message="tns:lookupStudentRequest"/>
+            <wsdl:output message="tns:lookupStudentResponse"/>
+            <wsdl:fault name="noStudentFoundException" message="faults:NoResultExcpetion"/>
+        </wsdl:operation>
+        <wsdl:operation name="updateStudent">
+        	<wsdl:documentation>This operation updates student with valid id and gives back the updated details.</wsdl:documentation>
+            <wsdl:input message="tns:updateStudentRequest"/>
+            <wsdl:output message="tns:updateStudentResponse"/>
+            <wsdl:fault name="UpdateStudentException" message="faults:StudentServiceExcpetion"/>
+        </wsdl:operation>
+        <wsdl:operation name="getStudentStatus">
+        	<wsdl:documentation>This operation checks student result(PASS/FAIL) with valid id. Throws exception for invalid id.</wsdl:documentation>
+            <wsdl:input message="tns:studentStatusRequest"/>
+            <wsdl:output message="tns:studentStatusResponse"/>
+            <wsdl:fault name="noStudentFoundException" message="faults:NoResultExcpetion"/>
+        </wsdl:operation>   
+    </wsdl:portType>
+
+    <wsdl:binding name="StudentServiceBinding" type="tns:StudentServicePort">
+        <soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="lookupStudent">
+            <soap:operation
+				soapAction="http://demo.fuse.sahoora.com/ws/StudentService/lookupStudent" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+         </wsdl:operation>
+        <wsdl:operation name="updateStudent">
+            <soap:operation
+				soapAction="http://demo.fuse.sahoora.com/ws/StudentService/updateStudent" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>            
+        </wsdl:operation>
+        <wsdl:operation name="getStudentStatus">
+            <soap:operation
+				soapAction="http://demo.fuse.sahoora.com/ws/StudentService/getStudentStatus" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+         </wsdl:operation>                    
+    </wsdl:binding>
+    <wsdl:service name="StudentService">
+        <wsdl:port name="StudentServicePort" binding="tns:StudentServiceBinding">
+            <soap:address location="http://localhost:8181/cxf/ws/StudentService" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

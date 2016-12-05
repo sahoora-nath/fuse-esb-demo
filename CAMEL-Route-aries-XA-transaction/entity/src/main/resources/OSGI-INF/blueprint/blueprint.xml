@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+	xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0">
+    
+    <reference id="transactionManager" interface="javax.transaction.TransactionManager"/>
+    
+    <service id="studentResultDao" 
+    	interface="com.sahoo.camel.aries.example.dao.StudentResultDao"
+    	ref="studentResultDaoImpl"/>
+    	
+    <bean id="studentResultDaoImpl" class="com.sahoo.camel.aries.example.dao.impl.StudentResultDaoImpl">
+    	<tx:transaction method="*" value="Required" />
+    	<jpa:context property="entityManager" unitname="studentResultUnit" />
+    	<property name="transactionManager" ref="transactionManager"/>
+    </bean>
+    
+</blueprint>

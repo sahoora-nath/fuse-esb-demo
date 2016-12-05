@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+    <persistence-unit name="studentResultUnit" transaction-type="JTA">
+    <description>Persistence unit for Student Result example</description>
+
+    <!--
+      For this demo, we are using OpenJPA as our JPA implementation.
+    -->
+    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+
+    <!--
+      The data sources have been defined and published into the OSGi Service Registry by the 'datasource' module.
+      You can also use JNDI references to refer to services in the OSGi Service Registry
+     -->
+    <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/mysqldb)</jta-data-source>
+
+	<class>com.sahoo.camel.aries.example.domain.base.StudentsBase</class>
+    <class>com.sahoo.camel.aries.example.domain.StudentsResultDBO</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+    
+    <properties>   
+    <!--    	
+  		<property name="openjpa.ConnectionFactoryMode" value="managed"/>
+      	<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+      	<property name="openjpa.jdbc.DBDictionary" value="mysql"/>     	
+     	
+     	<property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost/appdev"/>
+  		<property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+  		<property name="openjpa.ConnectionUserName" value="root"/>
+  		<property name="openjpa.ConnectionPassword" value="password"/>   		
+     	
+     	<property name="openjpa.DynamicEnhancementAgent" value="true"/>
+  		<property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+  		<property name="openjpa.Log" value="SQL=TRACE"/>
+  		<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000"/>
+      	 
+      	<property name="openjpa.jdbc.DBDictionary" value="mysql"/>
+      	<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+      	<property name="openjpa.Connection2URL" value="jdbc:mysql://localhost:3306/appdev"/>
+    	<property name="openjpa.Connection2DriverName" value="com.mysql.jdbc.Driver"/>
+    	
+    	<property name="openjpa.ConnectionFactoryName" value="jdbc/mysqldb"/>
+    	-->
+    </properties>
+
+  </persistence-unit>
+
+</persistence>

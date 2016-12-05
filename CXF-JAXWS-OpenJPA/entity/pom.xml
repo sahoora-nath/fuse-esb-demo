@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>com.sahoora.fuse.demo</groupId>
+    <artifactId>fusedemo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  
+  <artifactId>entity</artifactId>
+  <name>FuseDemo :: entity</name>
+  <url>http://github.com/sahoora-nath</url>
+  <packaging>bundle</packaging>
+
+  <dependencies>
+	<dependency>
+      <groupId>com.sahoora.fuse.demo</groupId>
+      <artifactId>model</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-log4j12</artifactId>
+       <version>${slf4j.version}</version>
+   	</dependency>
+
+	<dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+	
+	
+	<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>5.1.17</version>
+		<scope>test</scope>
+	</dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+	
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+		<extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.parent.artifactId}-${project.artifactId}</Bundle-SymbolicName>
+          </instructions>
+        </configuration>
+      </plugin>
+
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>		
+		<configuration>
+          <encoding>UTF-8</encoding>
+        </configuration>		
+      </plugin>
+
+	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>build-helper-maven-plugin</artifactId>
+		<version>1.12</version>
+		<executions>
+			<execution>
+				<id>add-test-resource</id>
+				<phase>generate-test-sources</phase>
+				<goals>
+					<goal>add-test-resource</goal>
+				</goals>
+				<configuration>
+					<resources>
+						<resource>
+							<directory>src/test/resources</directory>
+							<directory>../model/src/test/resources</directory>
+							<!-- <excludes>
+								<exclude>**/folder-to-exclude/**</exclude>
+							</excludes> -->
+						</resource>
+					</resources>
+				</configuration>
+			</execution>
+		</executions>
+	</plugin>
+
+	<plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-surefire-plugin</artifactId>
+		<version>2.19.1</version>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.maven.surefire</groupId>
+				<artifactId>surefire-junit47</artifactId>
+				<version>2.19.1</version>
+			</dependency>
+		</dependencies>
+	</plugin>
+  
+    </plugins>
+  </build>
+</project>

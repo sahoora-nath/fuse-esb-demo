@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="spring.batch.fuse.demo" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+	<feature name="spring-batch-fuse-63">
+		<feature>transaction</feature>
+		<feature>camel-core</feature>
+		<feature>spring</feature>
+	    <feature>spring-tx</feature>
+		<bundle dependency='true'>mvn:javax.jms/javax.jms-api/2.0.1</bundle>
+		<bundle>wrap:mvn:org.springframework.batch/spring-batch-core/3.0.6.RELEASE</bundle>
+		<bundle>wrap:mvn:org.springframework.batch/spring-batch-infrastructure/3.0.6.RELEASE</bundle>		
+		<feature>spring-jdbc</feature>
+	    <feature>spring-oxm</feature>
+		<feature>jndi</feature>
+	    <feature>camel-blueprint</feature>	    
+	    <feature>camel-quartz</feature>		
+		<feature>openjpa</feature>	
+	    <bundle>wrap:mvn:mysql/mysql-connector-java/5.1.39</bundle>	    
+		<bundle>wrap:mvn:org.apache.camel/camel-spring-batch/2.18.0</bundle>		
+    </feature>
+</features>

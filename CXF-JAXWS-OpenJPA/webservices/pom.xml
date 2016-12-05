@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>com.sahoora.fuse.demo</groupId>
+    <artifactId>fusedemo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  
+  <artifactId>webservices</artifactId>
+  <name>FuseDemo :: webservices</name>
+  <url>http://github.com/sahoora-nath</url>
+  <packaging>bundle</packaging>
+
+  <dependencies>
+  	<dependency>
+      <groupId>com.sahoora.fuse.demo</groupId>
+      <artifactId>services-api</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+      <version>${cxf-version}</version>
+    </dependency>
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-lang3</artifactId>
+	    <version>3.4</version>
+	</dependency>
+	<dependency>
+	    <groupId>commons-beanutils</groupId>
+	    <artifactId>commons-beanutils</artifactId>
+	    <version>1.9.3</version>
+	</dependency>
+    
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-codegen-plugin</artifactId>
+        <version>3.1.8</version>
+        <executions>
+          <execution>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sourceRoot>${basedir}/target/generated-sources/cxf</sourceRoot>
+              <wsdlOptions>
+                <wsdlOption>
+                  <wsdl>${basedir}/src/main/resources/wsdl/StudentService.wsdl</wsdl>
+                  <wsdl>${basedir}/src/main/resources/wsdl/faults.wsdl</wsdl>
+                </wsdlOption>
+              </wsdlOptions>
+              <defaultOptions>
+              	<extraargs>
+              		<extraarg>-b</extraarg>
+              		<extraarg>${basedir}/src/main/resources/wsdl/binding.xml</extraarg>              		
+              		<extraarg>-nexclude</extraarg>
+              		<extraarg>http://demo.fuse.sahoora.com/ws/StudentService/=com.sahoora.fuse.demo.ws.studentservice</extraarg>
+              		<extraarg>-nexclude</extraarg>
+              		<extraarg>http://demo.fuse.sahoora.com/StudentService=com.sahoora.fuse.demo.studentservice</extraarg>
+              		<extraarg>-nexclude</extraarg>
+              		<extraarg>http://demo.fuse.sahoora.com/Faults=com.sahoora.fuse.demo.faults</extraarg>
+              	</extraargs>
+              </defaultOptions>
+            </configuration>
+            <goals>
+              <goal>wsdl2java</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.parent.artifactId}-${project.artifactId}</Bundle-SymbolicName>
+          </instructions>
+        </configuration>
+      </plugin>
+
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>	
+      </plugin>
+      
+    </plugins>
+  </build>
+</project>

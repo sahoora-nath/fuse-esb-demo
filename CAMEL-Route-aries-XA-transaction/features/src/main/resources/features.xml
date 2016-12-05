@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="CustomRepository" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+	<feature name="transactions-openjpa">
+		<feature>jpa</feature>
+	    <feature>jndi</feature>
+	    <feature>camel-blueprint</feature>
+	    <feature>camel-jpa</feature>
+	    <feature>camel-jms</feature>
+		<feature>connector</feature>
+		<feature>openjpa</feature>
+	
+	    <bundle>wrap:mvn:mysql/mysql-connector-java/5.1.39</bundle>	        
+    </feature>
+</features>

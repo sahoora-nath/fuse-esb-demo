@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://demo.fuse.sahoora.com/StudentService" 
+	elementFormDefault="qualified" 
+	xmlns="http://www.w3.org/2001/XMLSchema" 
+	xmlns:tns="http://demo.fuse.sahoora.com/StudentService">
+
+    	<complexType name="Student">
+    		<sequence>
+    			<element name="id" type="string" minOccurs="0"/>
+    			<element name="firstName" type="string"/>
+    			<element name="lastName" type="string"/>
+    			<element name="phoneNumber" type="string"/>
+    			<element name="dob" type="date"/>
+    			<element name="percentage" type="double"/>
+    		</sequence>
+    	</complexType>
+        
+        <element name="Student" type="tns:Student"/>
+        
+        <element name="StudentStatusType" type="tns:StudentStatusType"/>
+        <simpleType name="StudentStatusType">
+        	<restriction base="string">
+        		<enumeration value="PASS"/>
+        		<enumeration value="FAIL"/>
+        		<enumeration value="NO_STATUS"/>
+        	</restriction>
+        </simpleType>
+
+</schema>

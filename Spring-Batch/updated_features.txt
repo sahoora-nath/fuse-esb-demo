@@ -1,0 +1,26 @@
+--install -s mvn:org.springframework.batch/spring-batch-core/3.0.6.RELEASE
+--install -s mvn:org.springframework.batch/spring-batch-infrastructure/3.0.6.RELEASE
+--install -s wrap:mvn:org.springframework.retry/spring-retry/1.1.0.RELEASE
+--install -s wrap:mvn:javax.batch/javax.batch-api/1.0
+
+install -s wrap:mvn:mysql/mysql-connector-java/5.1.39
+install -s mvn:org.apache.camel/camel-spring-batch/2.17.0.redhat-630187
+
+
+dev:dynamic-import SPRING_BATCH_CORE_BUNDLE_ID
+dev:dynamic-import SPRING_BATCH_INFRASTRUCTURE_BUNDLE_ID
+dev:dynamic-import JAVAX.BATCH-API_BUNDLE_ID
+dev:dynamic-import SPRING_RETRY
+
+--features:install camel-spring-batch
+features:install spring-jdbc
+features:install spring-oxm
+features:install camel-quartz
+
+JBossFuse:karaf@root> features:install spring-dm
+JBossFuse:karaf@root> features:install spring-tx
+JBossFuse:karaf@root> features:install spring-orm
+JBossFuse:karaf@root> features:install spring-web
+
+
+

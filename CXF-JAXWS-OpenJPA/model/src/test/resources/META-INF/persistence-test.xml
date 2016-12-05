@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+    <persistence-unit name="testStudentResultUnit" transaction-type="RESOURCE_LOCAL">
+    <description>Persistence unit for Test Student Result DAO</description>
+
+    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+
+    
+	<class>com.sahoora.fuse.demo.domain.base.StudentsBase</class>
+    <class>com.sahoora.fuse.demo.domain.StudentsResultDBO</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+    
+    <properties>      	 
+      	<property name="openjpa.ConnectionFactoryMode" value="managed"/>
+      	<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+      	<property name="openjpa.jdbc.DBDictionary" value="mysql"/>
+     	
+     	<property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost/appdev"/>
+  		<property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+  		<property name="openjpa.ConnectionUserName" value="root"/>
+  		<property name="openjpa.ConnectionPassword" value="password"/>
+   		
+  		<property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+  		<property name="openjpa.Log" value="SQL=TRACE"/>
+  		<property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000"/>
+  	</properties>
+
+  </persistence-unit>
+
+</persistence>

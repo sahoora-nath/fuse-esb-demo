@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>com.sahoora.fuse.demo</groupId>
+    <artifactId>fusedemo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  
+  <artifactId>model</artifactId>
+  <name>FuseDemo :: model</name>
+  <url>http://github.com/sahoora-nath</url>
+  <packaging>bundle</packaging>
+  
+
+  <dependencies>
+       
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa</artifactId>
+      <version>2.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+	  <version>${slf4j.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <!--
+        Additional configuration for Felix' maven-bundle-plugin.  We are defining the Export-Package header to ensure our
+        entity classes are available to other bundles.  We also add the 'Meta-Persistence' header so Aries JPA will discover
+        and activate the persistence unit defined in the persistence.xml file.
+      -->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+          	<Bundle-SymbolicName>${project.parent.artifactId}-${project.artifactId}</Bundle-SymbolicName>
+            <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
+            <Export-Package>com.sahoora.fuse.demo.domain.*</Export-Package>
+            <Import-Package>
+            	javax.persistence;version="[1.0.0,2.1.1)",
+            	*
+            </Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+
+      <!--
+        The OpenJPA project recommends byte-code weaving to enhance the entity classes.  For deployment in Fuse ESB Enterprise,
+        this needs to be done at build-time, using the maven-antrun-plugin definition below.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <configuration>
+              <tasks>
+                <path id="enhance.path.ref">
+                  <fileset dir="${project.build.outputDirectory}">
+                    <include name="*.class"/>
+                  </fileset>
+                </path>
+                <pathconvert property="enhance.files" refid="enhance.path.ref" pathsep=" "/>
+                <java classname="org.apache.openjpa.enhance.PCEnhancer" failonerror="false">
+                  <arg line="-p persistence.xml"/>
+                  <arg line="${enhance.files}"/>
+                  <classpath>
+                    <path refid="maven.dependency.classpath"/>
+                    <path refid="maven.compile.classpath"/>
+                  </classpath>
+                </java>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>build-helper-maven-plugin</artifactId>
+		<version>1.12</version>
+		<executions>
+			<execution>
+				<id>add-test-resource</id>
+				<phase>generate-test-sources</phase>
+				<goals>
+					<goal>add-test-resource</goal>
+				</goals>
+				<configuration>
+					<resources>
+						<resource>
+							<directory>src/test/resources</directory>							
+						</resource>
+					</resources>
+				</configuration>
+			</execution>
+		</executions>
+	</plugin>
+	
+    </plugins>
+  </build>
+</project>
