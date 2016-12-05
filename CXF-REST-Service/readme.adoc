@@ -29,7 +29,11 @@ Use Apache Maven to build the demo. Open a new command prompt, change directory 
 
 === Create a Maven quick-start project
 ----
-mvn archetype:generate -DgroupId=com.sahoora.rest.service.demo -DartifactId=CXF-REST-Service -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+mvn archetype:generate 
+-DgroupId=com.sahoora.rest.service.demo 
+-DartifactId=CXF-REST-Service 
+-DarchetypeArtifactId=maven-archetype-quickstart 
+-DinteractiveMode=false
 ----
 
 === Add dependencies
@@ -57,29 +61,29 @@ javax.ws.rs.core;version="[1.1,2)",
 CXF 3.x needs to import explicitly java rs api 2.0
 
 ----
-	<build>
-		<defaultGoal>install</defaultGoal>
-		<plugins>			
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>3.2.0</version>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>REST-SERVICE</Bundle-SymbolicName>
-						<Import-Package>
-							META-INF.cxf,
-							org.apache.cxf.bus.spring,
-							javax.ws.rs;version="[2.0,3)",
-							javax.ws.rs.core;version="[2.0,3)",
-							*
-						</Import-Package>
-					</instructions>
-				</configuration>
-			</plugin>			
-		</plugins>
-	</build>
+<build>
+	<defaultGoal>install</defaultGoal>
+	<plugins>			
+		<plugin>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>maven-bundle-plugin</artifactId>
+			<version>3.2.0</version>
+			<extensions>true</extensions>
+			<configuration>
+				<instructions>
+					<Bundle-SymbolicName>REST-SERVICE</Bundle-SymbolicName>
+					<Import-Package>
+						META-INF.cxf,
+						org.apache.cxf.bus.spring,
+						javax.ws.rs;version="[2.0,3)",
+						javax.ws.rs.core;version="[2.0,3)",
+						*
+					</Import-Package>
+				</instructions>
+			</configuration>
+		</plugin>			
+	</plugins>
+</build>
 ----
 
 === Create Service
@@ -134,9 +138,13 @@ install -s mvn:com.sahoora.rest.service.demo/rest-service/1.0-SNAPSHOT
 === Check If Bundle is registered as WEB-SERVICE
 http://localhost:8181/cxf
 
+CXF REST-SERVICE
+
 image::/images/check-webservice.png[]
 
 === Test webservice
 Hit webservice http://localhost:8181/cxf/students/StudentService_1/get_data
+
+CXF-REST-Service response
 
 image::/images/test-webservice.png[]
